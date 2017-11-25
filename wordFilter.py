@@ -35,6 +35,7 @@ class WordFilter:
                     self.wordlist = pd.concat([self.wordlist, storywords],
                                               axis=0, ignore_index=True)
 
+        self.wordlist.drop_duplicates(inplace=True)
         self.student_words = None
 
     def filter_text(self, user_input):
