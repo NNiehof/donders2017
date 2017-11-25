@@ -3,11 +3,13 @@ words from a given word count list.
 """
 
 import pandas as pd
+import re
 
 textfile = "Resources/it_50k.txt"
+storytext = "Resources/casino murder Italian.txt"
 
 
-class WordFilter():
+class WordFilter:
     """Word filter class.
     Parameters
     ----------
@@ -18,8 +20,21 @@ class WordFilter():
     """
     def __init__(self, n_words=10000, wordcount=textfile):
         self.wordlist = pd.read_csv(wordcount, sep=" ", header=None,
-                                    encoding="ISO-8859-1", nrows=n_words)
-        self.wordlist.columns = ["word", "count"]
+                                    encoding="ISO-8859-1", nrows=n_words,
+                                    usecols=[0], squeeze=True)
+
+        # read in text narrative
+        with open(storytext, 'r', encoding="ISO-8859-1") as story:
+            for line in story:
+                # keep only alphanumeric and diacritic characters
+                line = re.sub(u'[^a-zA-Z0-9áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôÂÊÎÔãõÃÕçÇ ]', ' ', line)
+                line.encode("ISO-8859-1")
+                storywords = pd.Series(list(filter(None, line.split(" "))))
+                # skip lines with only whitespace
+                if not storywords.empty:
+                    self.wordlist = pd.concat([self.wordlist, storywords],
+                                              axis=0, ignore_index=True)
+
         self.student_words = None
 
     def filter_text(self, user_input):
@@ -37,7 +52,7 @@ class WordFilter():
         """
         self.student_words = user_input.split()
         for ind_w, word in enumerate(self.student_words):
-            if self.wordlist["word"].str.contains(word).any():
+            if self.wordlist.str.contains(word).any():
                 pass
             else:
                 return (ind_w, word)
@@ -48,3 +63,4 @@ if __name__ == "__main__":
     filt = WordFilter()
     excl_words = filt.filter_text("che la appeltaart")
     print(excl_words)
+    print(filt.wordlist)
