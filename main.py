@@ -11,7 +11,7 @@ READ_WEBSOCKET_DELAY = 1  # 1 second delay between reading from firehose
 botFather = BotFather(SLACK_BOT_TOKEN, BOT_ID)
 
 if botFather.connect():
-	print("StarterBot connected and running!")
+	print("Botfather connected and running!")
 	while True:
 		botFather.perform()
 		time.sleep(READ_WEBSOCKET_DELAY)
