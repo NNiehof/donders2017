@@ -96,10 +96,10 @@ class BotFather:
         if filtered is None:
             # if all words are allowed, pass the message along to other user
             if from_user_id in self.usernames:
-                from_user_name = self.usernames[from_user_id]
+                from_user_name = self.usernames[from_user_id]["real_name"]
             else:
                 from_user_name = from_user
-            self.post(from_user_name + ": " + text, away_channel)
+            self.post("*" + from_user_name + "*: " + text, away_channel)
             self.post("You have learned {} words so far!".format(
                 self.n_learned), home_channel)
         else:
@@ -118,24 +118,23 @@ class BotFather:
         input = self.slackClient.rtm_read()
         self.parse_slack_output(input)
 
-    def check_italian(self,user, text):  
-        print(user +" "+ text)      
+    def check_italian(self, user, text):
+        print(user + " " + text)
         for key in self.achievements:
             print("\t key:" + key)   
             if re.match(key,text): 
-                json.loads(str(self.usernames[user]))[text] = 1
+                json.loads(str(self.usernames[user]))["text"] = 1
                 print(json.dumps(self.usernames[user]))
-            
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
         json_obj = json.loads(json_data)
         usernames = {'':''}
-        for _item in json_obj['members']:
-            _item['murderer']=0
-            _item['motive']=0
-            _item['weapon']=0
-            if not _item['is_bot'] and  _item['id']!='USLACKBOT':
-                usernames[_item['id']]= str(json.dumps(_item))
+        for _item in json_obj["members"]:
+            _item["murderer"]=0
+            _item["motive"]=0
+            _item["weapon"]=0
+            if not _item["is_bot"] and _item["id"] != 'USLACKBOT':
+                usernames[_item["id"]] = json.loads(str(json.dumps(_item)))
             #print("\n"+str(_item))
         return usernames

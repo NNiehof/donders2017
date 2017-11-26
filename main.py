@@ -3,7 +3,7 @@ from botfather_commander import BotfatherCommander
 import time
 
 # Hackathon-style tokens and IDs!
-SLACK_BOT_TOKEN = 'xoxb-277615982901-SEQnc34M3fT19BAKgfKgSJlS'
+SLACK_BOT_TOKEN = 'xoxb-277615982901-zN8QxHQf53TEuqrGkxab7LFO'
 BOT_ID = "U85J3UWSH"
 
 READ_WEBSOCKET_DELAY = 1  # 1 second delay between reading from firehose
