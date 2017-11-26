@@ -1,7 +1,6 @@
 import os
 import time, random
 from slackclient import SlackClient
-from itertools import combinations
 
 
 # starterbot's ID as an environment variable

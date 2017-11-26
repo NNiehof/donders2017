@@ -34,7 +34,7 @@ class BotFather:
             for output in output_list:
                 # act upon messages that are not its own
                 if output and 'text' in output and 'user' in output and output['user'] != self.botID:
-                    self.learning_progress(output['user'], output['text'])
+                    user, self.n_learned = self.learning_progress(output['user'], output['text'])
                     self.post(self.kernel.respond(output['text']), output['channel'])
 
                     # Find myname-othername channels
@@ -58,9 +58,14 @@ class BotFather:
     def direct_message(self, text, from_user, to_user):
         filtered = self.wordFilter.filter_text(text)
         if filtered is None:
+            # if all words are allowed, pass the message along to other user
             channel = to_user + '-' + from_user
             self.post(from_user + ": " + text, channel)
+            channel2 = from_user + '-' + to_user
+            self.post("You have learned {} words so far!".format(
+                self.n_learned), channel2)
         else:
+            # if disallowed words present, notify the sender
             channel = from_user + '-' + to_user
             text = "Cannot use the word '" + filtered + "'."
             self.post(text, channel)
