@@ -1,6 +1,7 @@
 import os
 import time, random
 from slackclient import SlackClient
+from itertools import combinations
 
 
 # starterbot's ID as an environment variable
@@ -70,16 +71,20 @@ def get_active_users(channel):
     # check for 5 active users, assign to roles, and send personal messages..
     users = slack_client.api_call("users.list", channel=channel, as_user=True)
     uids = []
+    unames = []
     active_uids = []
+    active_unames = []
     for u in users["members"]: 
         print u["id"]
         if not u["is_bot"]:
             uids.append(u["id"])
-    for u in uids:
+            unames.append(u["real_name"])
+    for u, u_name in zip(uids, unames):
         status = slack_client.api_call("users.getPresence", user=u, channel=channel, as_user=True)
         if status["presence"]=="active":
             active_uids.append(u)
-    return active_uids
+            active_unames.append(u_name)
+    return active_uids, active_unames
 
 def assign_active_users(players, channel):
     global roles_assigned
@@ -90,7 +95,18 @@ def assign_active_users(players, channel):
             slack_client.api_call("chat.postEphemeral", channel=channel, text=msg, user=uid, as_user=True)
             time.sleep(2)
 
-
+def create_channels(active_unames):
+    """Create for each set of users (u1, u2) a channel u1-u2 to pass filtered
+    messages from u1 to u2, and a channel u2-u1, to pass filtered messages
+    vice versa.
+    """
+    # all combinations of users
+    user_pairs = combinations(active_unames, 2)
+    for upair in user_pairs:
+        name1 = "{}-{}".format(upair[0], upair[1])
+        name2 = "{}-{}".format(upair[1], upair[0])
+        slack_client.api_call("groups.create", name=name1)
+        slack_client.api_call("groups.create", name=name2)
 
 def handle_command(command, channel):
     """Receives commands directed at the bot and determines if they are
@@ -99,7 +115,7 @@ def handle_command(command, channel):
     global GAME_STARTED, lang_tips_ind, tips_ind, players
     if not GAME_STARTED:
         if command.startswith(START_GAME):
-            players = get_active_users(channel)
+            players, playernames = get_active_users(channel)
             print players # need 5...
             assign_active_users(players, channel)
 
