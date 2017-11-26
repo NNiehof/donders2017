@@ -25,12 +25,10 @@ class BotfatherCommander:
     players = []
 
     def get_active_users(self, channel):
-        # check for 5 active users, assign to roles, and send personal messages..
         users = self.slack_client.api_call("users.list", channel=channel, as_user=True)
         uids = []
         active_uids = []
         for u in users["members"]:
-            print(u["id"])
             if not u["is_bot"]:
                 uids.append(u["id"])
         for u in uids:
@@ -45,7 +43,6 @@ class BotfatherCommander:
             self.roles_assigned[roles[i]] = uid
             for msg in private_msg[roles[i]]:
                 self.slack_client.api_call("chat.postEphemeral", channel=channel, text=msg, user=uid, as_user=True)
-                time.sleep(2)
 
     def handle_command(self, command, channel):
         """Receives commands directed at the bot and determines if they are
@@ -55,7 +52,6 @@ class BotfatherCommander:
         if not GAME_STARTED:
             if command.startswith(START_GAME):
                 players = self.get_active_users(channel)
-                print(players)  # need 5...
                 self.assign_active_users(players, channel)
 
                 for i in intro:
