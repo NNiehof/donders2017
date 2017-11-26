@@ -1,15 +1,15 @@
 <aiml version="1.0.1" encoding="UTF-8">
 	<category>
-		<pattern>WHO ARE YOU</pattern>
+		<pattern>_MURDER*</pattern>
 		<template>
-			TARTA DI MELE!
+			MURDERR!
 		</template>
 	</category>
 
 	<category>
-		<pattern>TU CHI SEI</pattern>
+		<pattern>OMICIDIO</pattern>
 		<template>
-			TARTA DI MELE!
+			MURDERR!
 		</template>
 	</category>
 </aiml>
