@@ -11,11 +11,17 @@ class BotFather:
         self.botID = bot_id
         self.slackClient = SlackClient(slack_bot_token)
 
+        self.achievements = {}        
+        self.achievements['^(?=.*\\bassassino\\b)(?=.*\\bgladiatore\\b).*$'] = 'murderer'
+        self.achievements['^(?=.*\\bmotivo\\b)(?=.*\\bvendetta\\b).*$'] = 'motive'
+        self.achievements['^(?=.*\\barma\\b)(?=.*\\bcoltello\\b).*$'] = 'weapon'
+        
         self.usernames = self.load_users()
         self.atBot = "<@" + bot_id + ">"
 
         self.wordFilter = WordFilter()
         self.learned_words = {key: [] for key in self.usernames}
+
 
         # Init language check
         self.language = language_check.LanguageTool('it-IT')
@@ -48,7 +54,6 @@ class BotFather:
                     if response:
                         self.post(response, output['channel'])
                     user, self.n_learned = self.learning_progress(output['user'], output['text'])
-
                     # Language check
                     correction = self.check_language(output['text'])
                     if correction is not None:
@@ -66,7 +71,8 @@ class BotFather:
         if the words are unique and correct
         """
         if self.wordFilter.filter_text(text) is None:
-            for word in text.split():
+            self.check_italian(user,text)
+            for word in text:
                 if word not in self.learned_words[user]:
                     self.learned_words[user].append(word)
         n_learned = len(self.learned_words[user])
@@ -90,11 +96,10 @@ class BotFather:
         if filtered is None:
             # if all words are allowed, pass the message along to other user
             if from_user_id in self.usernames:
-                print(self.usernames[from_user_id])
-                from_user_name = self.usernames[from_user_id].real_name
+                from_user_name = self.usernames[from_user_id]
             else:
                 from_user_name = from_user
-            self.post("*" + from_user_name.upper() + "*: " + text, away_channel)
+            self.post(from_user_name + ": " + text, away_channel)
             self.post("You have learned {} words so far!".format(
                 self.n_learned), home_channel)
         else:
@@ -113,11 +118,24 @@ class BotFather:
         input = self.slackClient.rtm_read()
         self.parse_slack_output(input)
 
+    def check_italian(self,user, text):  
+        print(user +" "+ text)      
+        for key in self.achievements:
+            print("\t key:" + key)   
+            if re.match(key,text): 
+                json.loads(str(self.usernames[user]))[text] = 1
+                print(json.dumps(self.usernames[user]))
+            
+
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
         json_obj = json.loads(json_data)
         usernames = {'':''}
         for _item in json_obj['members']:
+            _item['murderer']=0
+            _item['motive']=0
+            _item['weapon']=0
             if not _item['is_bot'] and  _item['id']!='USLACKBOT':
-                usernames[_item['id']]=_item['name']
+                usernames[_item['id']]= str(json.dumps(_item))
+            #print("\n"+str(_item))
         return usernames
