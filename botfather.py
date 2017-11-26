@@ -7,15 +7,16 @@ import aiml
 
 class BotFather:
     def __init__(self, slack_bot_token, bot_id):
-        
         self.slackBotToken = slack_bot_token
         self.botID = bot_id
         self.slackClient = SlackClient(slack_bot_token)
 
         self.usernames = self.load_users()
         self.atBot = "<@" + bot_id + ">"
-        self.wordFilter = WordFilter()                   
+
+        self.wordFilter = WordFilter()
         self.learned_words = {key: [] for key in self.usernames}
+
 
         # Init language check
         self.language = language_check.LanguageTool('it-IT')
@@ -47,8 +48,8 @@ class BotFather:
                     response = self.kernel.respond(output['text'])
                     if response:
                         self.post(response, output['channel'])
+                    user, self.n_learned = self.learning_progress(output['user'], output['text'])
 
-                    #self.learning_progress(output['user'], output['text'])
                     # Language check
                     correction = self.check_language(output['text'])
                     if correction is not None:
@@ -85,20 +86,21 @@ class BotFather:
 
     def direct_message(self, text, from_user, to_user, from_user_id):
         filtered = self.wordFilter.filter_text(text)
+        home_channel = from_user + '-' + to_user
+        away_channel = to_user + '-' + from_user
         if filtered is None:
             # if all words are allowed, pass the message along to other user
-            channel = to_user + '-' + from_user
-            print(self.usernames)
             if from_user_id in self.usernames:
                 from_user_name = self.usernames[from_user_id]
             else:
                 from_user_name = from_user
-            self.post(from_user_name + ": " + text, channel)
+            self.post(from_user_name + ": " + text, away_channel)
+            self.post("You have learned {} words so far!".format(
+                self.n_learned), home_channel)
         else:
             # if disallowed words present, notify the sender
-            channel = from_user + '-' + to_user
             text = "Cannot use the word '" + filtered + "'."
-            self.post(text, channel)
+            self.post(text, home_channel)
 
     def connect(self):
         if self.slackClient.rtm_connect():
