@@ -1,0 +1,15 @@
+<aiml version="1.0.1" encoding="UTF-8">
+	<category>
+		<pattern>WHO ARE YOU</pattern>
+		<template>
+			TARTA DI MELE!
+		</template>
+	</category>
+
+	<category>
+		<pattern>TU CHI SEI</pattern>
+		<template>
+			TARTA DI MELE!
+		</template>
+	</category>
+</aiml>

@@ -3,7 +3,7 @@ import re
 from wordFilter import WordFilter
 import language_check
 import json
-
+import aiml
 
 class BotFather:
     def __init__(self, slack_bot_token, bot_id):
@@ -13,13 +13,17 @@ class BotFather:
         self.slackClient = SlackClient(slack_bot_token)
 
         self.usernames = self.load_users()
-        print(self.usernames)
         self.atBot = "<@" + bot_id + ">"
         self.wordFilter = WordFilter()                   
         self.learned_words = {key: [] for key in self.usernames}
+
         # Init language check
         self.language = language_check.LanguageTool('it-IT')
         self.n_learned = 0
+
+        # Init AIML
+        self.kernel = aiml.Kernel()
+        self.kernel.learn('botfather.xml')
 
     def post(self, text, channel):
         return self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
@@ -37,6 +41,11 @@ class BotFather:
             for output in output_list:
                 # act upon messages that are not its own
                 if output and 'text' in output and 'user' in output and output['user'] != self.botID:
+                    # AIML
+                    response = self.kernel.respond(output['text'])
+                    if response:
+                        self.post(response, output['channel'])
+
                     #self.learning_progress(output['user'], output['text'])
                     # Language check
                     correction = self.check_language(output['text'])
@@ -104,4 +113,3 @@ class BotFather:
                 usernames.append(_item['name'])
         return usernames
 
-        
