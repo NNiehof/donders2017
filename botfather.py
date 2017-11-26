@@ -110,10 +110,11 @@ class BotFather:
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
+        #print(json_data)
         json_obj = json.loads(json_data)
-        usernames = []
+        usernames = {'':''}
         for _item in json_obj['members']:
-            if not _item['is_bot']:
-                usernames.append(_item['name'])
+            if not _item['is_bot'] and  _item['id']!='USLACKBOT':
+                print(_item['id'],_item['name'])
+                usernames[_item['id']]=_item['name']
         return usernames
-
