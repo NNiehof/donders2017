@@ -7,24 +7,18 @@ import json
 
 class BotFather:
     def __init__(self, slack_bot_token, bot_id):
+        
         self.slackBotToken = slack_bot_token
         self.botID = bot_id
         self.slackClient = SlackClient(slack_bot_token)
-<<<<<<< HEAD
 
         self.usernames = self.load_users()
         print(self.usernames)
         self.atBot = "<@" + bot_id + ">"
         self.wordFilter = WordFilter()                   
         #self.learned_words = [key([]) for key in self.usernames]
-=======
-        self.atBot = "<@" + bot_id + ">"
-        self.wordFilter = WordFilter()
-        self.usernames = self.slackClient.api_call("users.list")
->>>>>>> 3c249cb2163843a3362d9fbd1db8ea2631383f1f
         # Init language check
         self.language = language_check.LanguageTool('it-IT')
-        self.n_learned = 0
 
     def post(self, text, channel):
         return self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
@@ -33,7 +27,7 @@ class BotFather:
         info = self.slackClient.api_call("groups.info", channel=channel_id)
         if info and 'group' in info:
             return info['group']['name']
-
+        
         return 'Untitled Document 1'
 
     def parse_slack_output(self, slack_rtm_output):
@@ -41,16 +35,8 @@ class BotFather:
         if output_list and len(output_list) > 0:
             for output in output_list:
                 # act upon messages that are not its own
-<<<<<<< HEAD
                 if output and 'text' in output and 'user' in output and output['user'] != self.botID:
                     #self.learning_progress(output['user'], output['text'])
-=======
-                if output and 'text' in output and 'user' in output and output['user'] != self.botID and self.atBot not in output['text']:
-                    user, self.n_learned = self.learning_progress(output['user'], output['text'])
-                    self.post(self.kernel.respond(output['text']), output['channel'])
-                    self.learning_progress(output['user'], output['text'])
-
->>>>>>> 3c249cb2163843a3362d9fbd1db8ea2631383f1f
                     # Language check
                     correction = self.check_language(output['text'])
                     if correction is not None:
@@ -63,7 +49,6 @@ class BotFather:
                         self.direct_message(output['text'], match.group(1), match.group(2))
 
     def learning_progress(self, user, text):
-<<<<<<< HEAD
          """Add user text input to that user's list of learned words,
          if the words are unique and correct
          """
@@ -73,17 +58,6 @@ class BotFather:
                      self.learned_words[user].append(word)
                      n_learned = len(self.learned_words[user])
                      return user, n_learned
-=======
-        """Add user text input to that user's list of learned words,
-        if the words are unique and correct
-        """
-        if self.wordFilter.filter_text(text) is None:
-            for word in text:
-                if word not in self.learned_words[user]:
-                    self.learned_words[user].append(word)
-        n_learned = len(self.learned_words[user])
-        return user, n_learned
->>>>>>> 3c249cb2163843a3362d9fbd1db8ea2631383f1f
 
     def check_language(self, text):
         txt = text.title()
@@ -93,30 +67,21 @@ class BotFather:
             for match in matches:
                 if len(match.replacements) > 0:
                     return "Did you mean '" + correction + "'?"
-            return "Unclear what you mean by that."
-        return None
+                    return "Unclear what you mean by that."
+                    return None
 
     def direct_message(self, text, from_user, to_user):
         filtered = self.wordFilter.filter_text(text)
         if filtered is None:
-            # if all words are allowed, pass the message along to other user
             channel = to_user + '-' + from_user
             self.post(from_user + ": " + text, channel)
-            channel2 = from_user + '-' + to_user
-            self.post("You have learned {} words so far!".format(
-                self.n_learned), channel2)
         else:
-            # if disallowed words present, notify the sender
             channel = from_user + '-' + to_user
             text = "Cannot use the word '" + filtered + "'."
             self.post(text, channel)
 
     def connect(self):
-        if self.slackClient.rtm_connect():
-            print("Botfather connected and running!")
-            return True
-
-        return False
+        return self.slackClient.rtm_connect()
 
     def perform(self):
         input = self.slackClient.rtm_read()
