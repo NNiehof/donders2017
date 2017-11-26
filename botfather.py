@@ -60,7 +60,6 @@ class BotFather:
                     # Find myname-othername channels
                     channel = self.get_channel_name(output["channel"])
                     match = re.search(r"([A-Za-z0-9]+)-([A-Za-z0-9]+)", channel)
-                    print(match)
                     if match:
                         self.direct_message(output["text"], match.group(1), match.group(2), output["user"])
 
