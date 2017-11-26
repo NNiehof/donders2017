@@ -13,7 +13,7 @@ class BotFather:
 
         self.achievements = {}        
         self.achievements["^(?=.*\\bassassino\\b)(?=.*\\bgladiatore\\b).*$"] = "assassino"
-        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\bvendetta\\b).*$"] = "assassino"
+        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\bvendetta\\b).*$"] = "motivo"
         self.achievements["^(?=.*\\barma\\b)(?=.*\\bcoltello\\b).*$"] = "arma"
         
         self.usernames = self.load_users()
@@ -126,12 +126,14 @@ class BotFather:
 
     def score(self, user, clue, channel):
         self.post("Complimenti! hai trovato il " + clue + "!", channel)
-        #      userObj = self.usernames[user]
-        #if userObj["assassino"] = 1 and userObj["motivo"] = 1 and userObj["arma"]=1 :
-        #    self.end_game(user)
+        userObj = self.usernames[user]
+        if userObj["assassino"] == 1 and userObj["motivo"] == 1 and userObj["arma"]==1 :
+            self.end_game(userObj)
 
-    #def end_game(self, user):
-    #    self.slackClient("")
+    def end_game(self, userObj):        
+        channels = self.slackClient.api_call("channels.list")
+        for channel in channels:
+            self.post(userObj["name"]+" vinto la partita. Il gladiatore era l'assassino !. Ha pugnalato la sua vittima con un coltello per vendetta.", channel)
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
