@@ -1,7 +1,7 @@
 from slackclient import SlackClient
 import re
 from wordFilter import WordFilter
-import aiml.Kernel
+import language_check
 
 
 class BotFather:
@@ -13,9 +13,8 @@ class BotFather:
 		self.atBot = "<@" + bot_id + ">"
 		self.wordFilter = WordFilter()
 
-		# Init AIML
-		self.kernel = aiml.Kernel()
-		self.kernel.learn('botfather.xml')
+		# Init language check
+		self.language = language_check.LanguageTool('it-IT')
 
 	def post(self, text, channel):
 		return self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
@@ -33,7 +32,9 @@ class BotFather:
 			for output in output_list:
 				# act upon messages that are not its own
 				if output and 'text' in output and 'user' in output and output['user'] != self.botID:
-					self.post(self.kernel.respond(output['text']), output['channel'])
+					correction = self.check_language(output['text'])
+					if correction is not None:
+						self.post(correction, output['channel'])
 
 					# Find myname-othername channels
 					channel = self.get_channel_name(output['channel'])
@@ -41,6 +42,17 @@ class BotFather:
 					if match:
 						self.direct_message(output['text'], match.group(1), match.group(2))
 		return None, None
+
+	def check_language(self, text):
+		txt = text.title()
+		matches = self.language.check(txt)
+		if len(matches) > 0:
+			correction = language_check.correct(txt, matches)
+			for match in matches:
+				if len(match.replacements) > 0:
+					return "Did you mean '" + correction + "'?"
+			return "Unclear what you mean by that."
+		return None
 
 	def direct_message(self, text, from_user, to_user):
 		filtered = self.wordFilter.filter_text(text)

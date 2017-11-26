@@ -1,18 +1,31 @@
 <aiml version="1.0.1" encoding="UTF-8">
-	<!-- basic_chat.aiml -->
-
 	<category>
-		<pattern>HELLO</pattern>
+		<pattern>
+			CIAO
+		</pattern>
 		<template>
-			Well, hello!
+
 		</template>
 	</category>
 
 	<category>
-		<pattern>WHAT ARE YOU</pattern>
+		<pattern>
+			<pattern>Chi è *?</pattern>
+		</pattern>
 		<template>
-			TORTA DI MELE!
+			<star index = "1"/> è un ospite, come te
 		</template>
 	</category>
 
+	<category>
+		<pattern>JOKE</pattern>
+		<template>How do you say goodbye in Italian in 4 letters? </template>
+	</category>
+
+	<topic name = "jokes">
+		<category>
+			<pattern> * </pattern>
+			<template>BANG!</template>
+		</category>
+	</topic>
 </aiml>
