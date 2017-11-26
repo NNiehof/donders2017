@@ -11,9 +11,10 @@ class BotFather:
         self.slackClient = SlackClient(slack_bot_token)
         self.atBot = "<@" + bot_id + ">"
         self.wordFilter = WordFilter()
-        self.learned_words = {}  #[key([]) for key in self.usernames]
+        self.usernames = self.slackClient.api_call("users.list")
         # Init language check
         self.language = language_check.LanguageTool('it-IT')
+        self.n_learned = 0
 
     def post(self, text, channel):
         return self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
@@ -23,7 +24,7 @@ class BotFather:
         if info and 'group' in info:
             return info['group']['name']
 
-        return ''
+        return 'Untitled Document 1'
 
     def parse_slack_output(self, slack_rtm_output):
         output_list = slack_rtm_output
@@ -31,7 +32,7 @@ class BotFather:
             for output in output_list:
                 # act upon messages that are not its own
                 if output and 'text' in output and 'user' in output and output['user'] != self.botID and self.atBot not in output['text']:
-                    self.learning_progress(output['user'], output['text'])
+                    user, self.n_learned = self.learning_progress(output['user'], output['text'])
 
                     # Language check
                     correction = self.check_language(output['text'])
