@@ -2,19 +2,29 @@ from slackclient import SlackClient
 import re
 from wordFilter import WordFilter
 import language_check
-
+import json
+import aiml
 
 class BotFather:
     def __init__(self, slack_bot_token, bot_id):
         self.slackBotToken = slack_bot_token
         self.botID = bot_id
         self.slackClient = SlackClient(slack_bot_token)
-        self.usernames = self.slackClient.api_call("users.list")
+
+        self.usernames = self.load_users()
         self.atBot = "<@" + bot_id + ">"
+
         self.wordFilter = WordFilter()
         self.learned_words = {key: [] for key in self.usernames}
+
+
         # Init language check
         self.language = language_check.LanguageTool('it-IT')
+        self.n_learned = 0
+
+        # Init AIML
+        self.kernel = aiml.Kernel()
+        self.kernel.learn('botfather.xml')
 
     def post(self, text, channel):
         return self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
@@ -32,9 +42,11 @@ class BotFather:
             for output in output_list:
                 # act upon messages that are not its own
                 if output and 'text' in output and 'user' in output and output['user'] != self.botID:
+                    # AIML
+                    response = self.kernel.respond(output['text'])
+                    if response:
+                        self.post(response, output['channel'])
                     user, self.n_learned = self.learning_progress(output['user'], output['text'])
-                    self.post(self.kernel.respond(output['text']), output['channel'])
-                    self.learning_progress(output['user'], output['text'])
 
                     # Language check
                     correction = self.check_language(output['text'])
@@ -51,12 +63,12 @@ class BotFather:
         """Add user text input to that user's list of learned words,
         if the words are unique and correct
         """
-        if WordFilter.filter_text(text) is None:
+        if self.wordFilter.filter_text(text) is None:
             for word in text:
                 if word not in self.learned_words[user]:
                     self.learned_words[user].append(word)
-                    n_learned = len(self.learned_words[user])
-                    return user, n_learned
+        n_learned = len(self.learned_words[user])
+        return user, n_learned
 
     def check_language(self, text):
         txt = text.title()
@@ -85,7 +97,23 @@ class BotFather:
             self.post(text, channel)
 
     def connect(self):
-        return self.slackClient.rtm_connect()
+        if self.slackClient.rtm_connect():
+            print("Botfather connected and running!")
+            return True
+
+        return False
 
     def perform(self):
-        self.parse_slack_output(self.slackClient.rtm_read())
+        input = self.slackClient.rtm_read()
+        #print(input)
+        self.parse_slack_output(input)
+
+    def load_users(self):
+        json_data = json.dumps(self.slackClient.api_call("users.list"))
+        json_obj = json.loads(json_data)
+        usernames = []
+        for _item in json_obj['members']:
+            if not _item['is_bot']:
+                usernames.append(_item['name'])
+        return usernames
+
