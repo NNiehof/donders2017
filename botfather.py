@@ -122,9 +122,8 @@ class BotFather:
                 self.usernames[user][self.achievements[key]] = 1
                 print(self.usernames[user])
                 self.score(user,self.achievements[key],channel)
-
-    def score(self, user, clue, channel):
-        self.post("Complimenti! hai trovato il " + clue + "!", channel)
+     def score(self, user, clue, channel):
+            self.post("Complimenti! hai trovato il " + clue + "!", channel)
         userObj = self.usernames[user]
         if userObj["assassino"] == 1 and userObj["motivo"] == 1 and userObj["arma"]==1 :
             self.end_game(userObj)
