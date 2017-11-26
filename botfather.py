@@ -17,7 +17,6 @@ class BotFather:
         self.wordFilter = WordFilter()
         self.learned_words = {key: [] for key in self.usernames}
 
-
         # Init language check
         self.language = language_check.LanguageTool('it-IT')
         self.n_learned = 0
@@ -94,7 +93,7 @@ class BotFather:
                 from_user_name = self.usernames[from_user_id]
             else:
                 from_user_name = from_user
-            self.post(from_user_name + ": " + text, away_channel)
+            self.post("*" + from_user_name.upper() + "*: " + text, away_channel)
             self.post("You have learned {} words so far!".format(
                 self.n_learned), home_channel)
         else:
