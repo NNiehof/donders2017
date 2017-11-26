@@ -32,7 +32,6 @@ class BotFather:
 
     def post(self, text, channel):
         result = self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
-        print(result)
         return result
 
     def get_channel_name(self, channel_id):
@@ -61,7 +60,6 @@ class BotFather:
                     # Find myname-othername channels
                     channel = self.get_channel_name(output["channel"])
                     match = re.search(r"([A-Za-z0-9]+)-([A-Za-z0-9]+)", channel)
-                    print(match)
                     if match:
                         self.direct_message(output["text"], match.group(1), match.group(2), output["user"])
 
@@ -71,7 +69,7 @@ class BotFather:
         """
         if self.wordFilter.filter_text(text) is None:
             self.check_italian(user,text,channel)
-            for word in text:
+            for word in text.split():
                 if word not in self.learned_words[user]:
                     self.learned_words[user].append(word)
         n_learned = len(self.learned_words[user])
@@ -89,6 +87,7 @@ class BotFather:
         return None
 
     def direct_message(self, text, from_user, to_user, from_user_id):
+        print(self.learned_words)
         filtered = self.wordFilter.filter_text(text)
         home_channel = from_user + "-" + to_user
         away_channel = to_user + "-" + from_user
