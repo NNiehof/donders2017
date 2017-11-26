@@ -71,8 +71,13 @@ class BotFather:
         if the words are unique and correct
         """
         if self.wordFilter.filter_text(text) is None:
+<<<<<<< HEAD
             self.check_italian(user,text,channel)
             for word in text:
+=======
+            self.check_italian(user,text)
+            for word in text.split():
+>>>>>>> 9ac550f8d2b2ee4c0a80b3eb7a995731323944c7
                 if word not in self.learned_words[user]:
                     self.learned_words[user].append(word)
         n_learned = len(self.learned_words[user])
