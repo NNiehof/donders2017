@@ -71,7 +71,7 @@ class BotFather:
         """
         if self.wordFilter.filter_text(text) is None:
             self.check_italian(user,text,channel)
-            for word in text:
+            for word in text.split():
                 if word not in self.learned_words[user]:
                     self.learned_words[user].append(word)
         n_learned = len(self.learned_words[user])
@@ -89,6 +89,7 @@ class BotFather:
         return None
 
     def direct_message(self, text, from_user, to_user, from_user_id):
+        print(self.learned_words)
         filtered = self.wordFilter.filter_text(text)
         home_channel = from_user + "-" + to_user
         away_channel = to_user + "-" + from_user
