@@ -117,21 +117,30 @@ class BotFather:
         self.parse_slack_output(input)
 
     def check_italian(self, user, text,channel):
-        for key in self.achievements:            
+        for key in self.achievements:   
             if re.match(key,text): 
-                self.usernames[user][self.achievements[key]] = 1
-                print(self.usernames[user])
+                self.usernames[user][self.achievements[key]] = 1                
                 self.score(user,self.achievements[key],channel)
-    def score(self, user, clue, channel):
+
+    def score(self, user, clue, channel):        
         self.post("Complimenti! hai trovato il " + clue + "!", channel)
         userObj = self.usernames[user]
-        if userObj["assassino"] == 1 and userObj["motivo"] == 1 and userObj["arma"]==1 :
+        clue1 = userObj["assassino"] == 1 
+        clue2 = userObj["motivo"] == 1 
+        clue3 = userObj["arma"] == 1
+        
+        if clue1 & clue2 & clue3:
+            print("END GAME")
             self.end_game(userObj)
 
     def end_game(self, userObj):        
-        channels = self.slackClient.api_call("groups.list")
-        for channel in channels:
-            self.post(userObj["name"]+" vinto la partita. Il gladiatore era l'assassino !. Ha pugnalato la sua vittima con un coltello per vendetta.", channel)
+        channels = self.slackClient.api_call("groups.list")        
+        msg = userObj["name"]+" vinto la partita. Il gladiatore era l'assassino !. Ha pugnalato la sua vittima con un coltello per vendetta."
+        self.post(msg, "general")
+
+        #for channel in channels["groups"]:
+        #    print(channel["id"])
+            
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
