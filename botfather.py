@@ -126,15 +126,21 @@ class BotFather:
 
     def score(self, user, clue, channel):
         self.post("Complimenti! hai trovato il " + clue + "!", channel)
+        #      userObj = self.usernames[user]
+        #if userObj["assassino"] = 1 and userObj["motivo"] = 1 and userObj["arma"]=1 :
+        #    self.end_game(user)
+
+    #def end_game(self, user):
+    #    self.slackClient("")
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
         json_obj = json.loads(json_data)
         usernames = {"":""}
         for _item in json_obj["members"]:
-            _item["murderer"]=0
-            _item["motive"]=0
-            _item["weapon"]=0
+            _item["assassino"]=0
+            _item["motivo"]=0
+            _item["arma"]=0
             if not _item["is_bot"] and _item["id"] != "USLACKBOT":
                 usernames[_item["id"]] = json.loads(str(json.dumps(_item)))
             #print("\n"+str(_item))
