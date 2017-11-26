@@ -90,7 +90,8 @@ class BotFather:
         if filtered is None:
             # if all words are allowed, pass the message along to other user
             if from_user_id in self.usernames:
-                from_user_name = self.usernames[from_user_id]
+                print(self.usernames[from_user_id])
+                from_user_name = self.usernames[from_user_id].real_name
             else:
                 from_user_name = from_user
             self.post("*" + from_user_name.upper() + "*: " + text, away_channel)
