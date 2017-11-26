@@ -46,7 +46,7 @@ class BotFather:
         if output_list and len(output_list) > 0:
             for output in output_list:
                 # act upon messages that are not its own
-                if output and "text" in output and "user" in output and output["user"] != self.botID:
+                if output and "text" in output and "user" in output and output["user"] != self.botID and self.atBot not in output['text']:
                     # AIML
                     response = self.kernel.respond(output["text"])
                     if response:
@@ -87,7 +87,6 @@ class BotFather:
         return None
 
     def direct_message(self, text, from_user, to_user, from_user_id):
-        print(self.learned_words)
         filtered = self.wordFilter.filter_text(text)
         home_channel = from_user + "-" + to_user
         away_channel = to_user + "-" + from_user

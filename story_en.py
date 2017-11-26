@@ -15,7 +15,7 @@ tips = ["Very few of us are what we seem. -Agatha Christie",
         "I'm going to make him an offer he can't refuse.",
         "Revenge is a dish best served cold."]
 
-roles = ["reporter","tutor","gunnut","escort","gladiator"]  # shuffle
+roles = ["reporter", "tutor", "gunnut", "escort", "gladiator"]  # shuffle
 
 private_msg = {
     "reporter": ["You are the reporter, a bad boy with a reputation for using dirty tricks to get the latest news.",
