@@ -27,7 +27,7 @@ class WordFilter:
         with open(storytext, 'r', encoding="ISO-8859-1") as story:
             for line in story:
                 # keep only alphanumeric and diacritic characters
-                line = re.sub(u'[^a-zA-Z0-9áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôÂÊÎÔãõÃÕçÇ ]', ' ', line)
+                line = re.sub(u'[^a-zA-Z0-9áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôÂÊÎÔãõÃÕçÇ ]', '', line)
                 line.encode("ISO-8859-1")
                 storywords = pd.Series(list(filter(None, line.split(" "))))
                 # skip lines with only whitespace
@@ -53,10 +53,12 @@ class WordFilter:
         """
         self.student_words = user_input.split()
         for ind_w, word in enumerate(self.student_words):
-            if self.wordlist.str.contains(word, case=False).any():
-                pass
-            else:
-                return word
+            word = re.sub(u'[^a-zA-Z0-9áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôÂÊÎÔãõÃÕçÇ ]', '', word)
+            if word:
+                if self.wordlist.str.contains(word, case=False).any():
+                    pass
+                else:
+                    return word
         return None
 
 
