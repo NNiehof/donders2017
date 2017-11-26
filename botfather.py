@@ -13,7 +13,7 @@ class BotFather:
 
         self.achievements = {}        
         self.achievements["^(?=.*\\bassassino\\b)(?=.*\\bgladiatore\\b).*$"] = "assassino"
-        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\bvendetta\\b).*$"] = "assassino"
+        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\bvendetta\\b).*$"] = "motivo"
         self.achievements["^(?=.*\\barma\\b)(?=.*\\bcoltello\\b).*$"] = "arma"
         
         self.usernames = self.load_users()
@@ -21,7 +21,6 @@ class BotFather:
 
         self.wordFilter = WordFilter()
         self.learned_words = {key: [] for key in self.usernames}
-
 
         # Init language check
         self.language = language_check.LanguageTool("it-IT")
@@ -33,7 +32,6 @@ class BotFather:
 
     def post(self, text, channel):
         result = self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
-        print(result)
         return result
 
     def get_channel_name(self, channel_id):
@@ -48,7 +46,7 @@ class BotFather:
         if output_list and len(output_list) > 0:
             for output in output_list:
                 # act upon messages that are not its own
-                if output and "text" in output and "user" in output and output["user"] != self.botID:
+                if output and "text" in output and "user" in output and output["user"] != self.botID and self.atBot not in output['text']:
                     # AIML
                     response = self.kernel.respond(output["text"])
                     if response:
@@ -62,7 +60,6 @@ class BotFather:
                     # Find myname-othername channels
                     channel = self.get_channel_name(output["channel"])
                     match = re.search(r"([A-Za-z0-9]+)-([A-Za-z0-9]+)", channel)
-                    print(match)
                     if match:
                         self.direct_message(output["text"], match.group(1), match.group(2), output["user"])
 
@@ -88,8 +85,6 @@ class BotFather:
                     return "Did you mean '" + correction + "'?"
             return "TORTA DI MELE!"
         return None
-
-
 
     def direct_message(self, text, from_user, to_user, from_user_id):
         filtered = self.wordFilter.filter_text(text)
@@ -126,19 +121,25 @@ class BotFather:
                 self.usernames[user][self.achievements[key]] = 1
                 print(self.usernames[user])
                 self.score(user,self.achievements[key],channel)
-
-    def score(self,user,clue, channel):
+    def score(self, user, clue, channel):
         self.post("Complimenti! hai trovato il " + clue + "!", channel)
+        userObj = self.usernames[user]
+        if userObj["assassino"] == 1 and userObj["motivo"] == 1 and userObj["arma"]==1 :
+            self.end_game(userObj)
 
+    def end_game(self, userObj):        
+        channels = self.slackClient.api_call("groups.list")
+        for channel in channels:
+            self.post(userObj["name"]+" vinto la partita. Il gladiatore era l'assassino !. Ha pugnalato la sua vittima con un coltello per vendetta.", channel)
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
         json_obj = json.loads(json_data)
         usernames = {"":""}
         for _item in json_obj["members"]:
-            _item["murderer"]=0
-            _item["motive"]=0
-            _item["weapon"]=0
+            _item["assassino"]=0
+            _item["motivo"]=0
+            _item["arma"]=0
             if not _item["is_bot"] and _item["id"] != "USLACKBOT":
                 usernames[_item["id"]] = json.loads(str(json.dumps(_item)))
             #print("\n"+str(_item))
