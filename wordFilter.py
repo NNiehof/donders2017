@@ -35,6 +35,7 @@ class WordFilter:
                     self.wordlist = pd.concat([self.wordlist, storywords],
                                               axis=0, ignore_index=True)
 
+        self.wordlist.drop_duplicates(inplace=True)
         self.student_words = None
 
     def filter_text(self, user_input):
@@ -52,7 +53,7 @@ class WordFilter:
         """
         self.student_words = user_input.split()
         for ind_w, word in enumerate(self.student_words):
-            if self.wordlist.str.contains(word).any():
+            if self.wordlist.str.contains(word, case=False).any():
                 pass
             else:
                 return word
@@ -61,6 +62,6 @@ class WordFilter:
 
 if __name__ == "__main__":
     filt = WordFilter()
-    excl_words = filt.filter_text("che la appeltaart")
+    excl_words = filt.filter_text("Che la appeltaart")
     print(excl_words)
     print(filt.wordlist)
