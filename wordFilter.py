@@ -55,7 +55,7 @@ class WordFilter:
             if self.wordlist.str.contains(word).any():
                 pass
             else:
-                return (ind_w, word)
+                return word
         return None
 
 
