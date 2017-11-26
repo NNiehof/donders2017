@@ -72,7 +72,7 @@ class BotFather:
         """
         if self.wordFilter.filter_text(text) is None:
             self.check_italian(user,text)
-            for word in text:
+            for word in text.split():
                 if word not in self.learned_words[user]:
                     self.learned_words[user].append(word)
         n_learned = len(self.learned_words[user])
