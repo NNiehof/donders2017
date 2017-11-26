@@ -15,14 +15,24 @@ tips = ["Solo pochi tra noi sono quello che sembrano. -Agatha Christie",
         "Gli farò una proposta che non può rifiutare.",
         "La vendetta è un piatto da servire freddo."]
 
-roles = ["reporter","tutor","gunnut","escort","gladiator"]  # shuffle
+roles = ["tutor","gunnut","escort","gladiator","reporter"]  # shuffle
 
 private_msg = {
-    "reporter": ["You are the reporter, a bad boy with a reputation for using dirty tricks to get the latest news.",
-                 "Your methods are not always legal..but that only matters if you get caught, right?",
-                 "You have never been to the casino before.",
-                 "Clue: You have been following Elvis for a story and you know that he was in a relationship with someone who was married."],
-    "tutor": ["tutors gotta tute"],
+    "reporter": ["Tu sei il giornalista, un cattivo ragazzo con la reputazione di usare trucchi sporchi per ottenere le ultime notizie.",
+                 "I tuoi metodi non sono sempre legali ... ma questo è importante solo se vieni catturato, giusto?",
+                 "Non sei mai stato al casinò prima d'ora.",
+                 "Indizio: Hai seguito Elvis per una storia e sai che era in una relazione con qualcuno che era sposato."],
+    "tutor": ["Sei l'assassino. Gli altri avranno indizi che potrebbero portare a te.",
+              "Devi dire agli altri che:",
+              "- Sei un maestro di canto che lavorava con Elvis sulla sua voce.",
+              "- Spesso gli hai dato lezioni private al casinò per stare con lui.",
+              "- Hai una moglie (che non è al casinò questa sera).",
+              "I fatti che seguono sono segreti, ma se qualcuno di fa domande NON puoi mentire:",
+              "- Avevi una relazione sessuale con Elvis.",
+              "- Avevi promesso a Elvis che avresti lasciato tua moglie per lui, ma non hai mai pensato di farlo davvero.",
+              "- Elvis aveva capito che non avresti mai lasciato tua moglie per lui e aveva minacciato di rendere pubblica la vostra relazione.",
+              "- Hai preso la pistola del matto (l'aveva dimenticata al casinò una notte) e hai sparato a Elvis quando il sipario si è alzato.",
+              "- Te la sei svignata mischiandoti alla folla e al caos."],
     "gunnut": ["Possiedi diverse pistole.",
                "Tu e tua moglie siete grandi fan di Elvis.",
                "Ma tu hai visto questo sosia di Elvis e pensi che sia pessimo.",
@@ -32,8 +42,8 @@ private_msg = {
     "escort": ["Intrattieni alcuni tra i più stimati ospiti del Starlight Casino.",
                "Sei orgogliosa di essere una di alto bordo, e non ti mischieresti mai alle battone.",
                "Indizio: una volta Elvis ha portato la Escort a un matrimonio, e lei dopo ci aveva provato con lui, ma lui non era interessato."],
-    "gladiator" : ["You are a recently-fired gladiator, and used to be best friends with Elvis.",
-                   "You were previously employed by the casino to entertain the gamblers.",
-                   "Elvis revealed to the owner that you were drinking on the job.",
-                   "One night, very drunk, you told the dancer that planned to stab Elvis in the back (like Brutus stabbed Caesar)."]
+    "gladiator" : ["Tu ed Elvis eravate migliori amici.",
+                   "In passato hai lavorato per il casinò, intrattenevi i giocatori d'azzardo.",
+                   "Elvis ha rivelato al padrone che tu bevevi sul lavoro.",
+                   "Una notte, molto ubriaco, hai detto alla ballerina che avevi intenzione di pugnalare Elvis alla schiena (come Bruto fece con Cesare)."]
 }
