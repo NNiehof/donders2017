@@ -1,0 +1,32 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<aiml version = "1.0.1" encoding = "UTF-8"?>
+    <category>
+        <pattern>
+            CIAO
+        </pattern>
+        <template>
+            Ciao a te!
+        </template>
+    </category>
+
+    <category>
+        <pattern>
+           <pattern>Chi è *?</pattern>
+        </pattern>
+        <template>
+            <star index = "1"/> è un ospite, come te
+        </template>
+    </category>
+
+    <category>
+      <pattern>JOKE</pattern>
+       <template>How do you say goodbye in Italian in 4 letters? <set name = "topic">jokes</set></template>  
+    </category>
+
+    <topic name = "jokes">
+        <category>
+            <pattern> * <pattern>
+            <template>BANG!</template>
+        </category>
+    </topic>
+</aiml>
