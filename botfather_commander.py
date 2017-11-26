@@ -8,14 +8,13 @@ HELP_LANGUAGE = "help language"
 HELP_OTHER = "help detect"
 START_GAME = "start"
 
-GAME_STARTED = False
-
 
 class BotfatherCommander:
 
     lang_tips_ind = 0
     tips_ind = 0
     roles_assigned = {}
+    GAME_STARTED = False
 
     def __init__(self, slack_api_key, bot_id):
         self.botID = bot_id
@@ -48,28 +47,29 @@ class BotfatherCommander:
         """Receives commands directed at the bot and determines if they are
         valid commands. If so, then acts on the commands. If not, asks for clarification.
         """
-        global GAME_STARTED, lang_tips_ind, tips_ind, players
-        if not GAME_STARTED:
+        print(self.GAME_STARTED)
+        if not self.GAME_STARTED:
             if command.startswith(START_GAME):
                 players = self.get_active_users(channel)
                 self.assign_active_users(players, channel)
 
                 for i in intro:
                     self.slack_client.api_call("chat.postMessage", channel=channel, text=i, as_user=True)
-                    time.sleep(5)
-                GAME_STARTED = True
+                    time.sleep(2)
+                self.GAME_STARTED = True
+                print("GAME STARTED" + str(self.GAME_STARTED))
             else:
                 response = "Sorry? Try starting a game ('start game')."
                 self.slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
         else:
             if command.startswith(HELP_LANGUAGE):
-                response = lang_tips[lang_tips_ind]
-                if lang_tips_ind < len(lang_tips):
-                    lang_tips_ind += 1
+                response = lang_tips[self.lang_tips_ind]
+                if self.lang_tips_ind < len(lang_tips):
+                    self.lang_tips_ind += 1
             elif command.startswith(HELP_OTHER):
-                response = tips[tips_ind]
-                if tips_ind < len(tips):
-                    tips_ind +=1
+                response = tips[self.tips_ind]
+                if self.tips_ind < len(tips):
+                    self.tips_ind +=1
             else:
                 response = "Sorry, I don't understand. Try '" + HELP_LANGUAGE + "' or '" + HELP_OTHER # or accuse?
             self.slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)

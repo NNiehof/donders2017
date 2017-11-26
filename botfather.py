@@ -46,7 +46,7 @@ class BotFather:
         if output_list and len(output_list) > 0:
             for output in output_list:
                 # act upon messages that are not its own
-                if output and "text" in output and "user" in output and output["user"] != self.botID:
+                if output and "text" in output and "user" in output and output["user"] != self.botID and self.atBot not in output['text']:
                     # AIML
                     response = self.kernel.respond(output["text"])
                     if response:
