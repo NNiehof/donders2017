@@ -1,6 +1,7 @@
 from slackclient import SlackClient
 import re
 from wordFilter import WordFilter
+import aiml.Kernel
 
 
 class BotFather:
@@ -8,17 +9,20 @@ class BotFather:
 	def __init__(self, slack_bot_token, bot_id):
 		self.slackBotToken = slack_bot_token
 		self.botID = bot_id
-		print(bot_id)
 		self.slackClient = SlackClient(slack_bot_token)
 		self.atBot = "<@" + bot_id + ">"
 		self.wordFilter = WordFilter()
+
+		# Init AIML
+		self.kernel = aiml.Kernel()
+		self.kernel.learn('botfather.xml')
 
 	def post(self, text, channel):
 		return self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
 
 	def get_channel_name(self, channel_id):
 		info = self.slackClient.api_call("groups.info", channel=channel_id)
-		if info:
+		if info and 'group' in info:
 			return info['group']['name']
 
 		return ''
@@ -29,6 +33,8 @@ class BotFather:
 			for output in output_list:
 				# act upon messages that are not its own
 				if output and 'text' in output and 'user' in output and output['user'] != self.botID:
+					self.post(self.kernel.respond(output['text']), output['channel'])
+
 					# Find myname-othername channels
 					channel = self.get_channel_name(output['channel'])
 					match = re.search(r"([A-Za-z0-9]+)-([A-Za-z0-9]+)", channel)
@@ -50,6 +56,4 @@ class BotFather:
 		return self.slackClient.rtm_connect()
 
 	def perform(self):
-		command, channel = self.parse_slack_output(self.slackClient.rtm_read())
-		if command and channel:
-			self.handle_command(command, channel)
+		self.parse_slack_output(self.slackClient.rtm_read())
