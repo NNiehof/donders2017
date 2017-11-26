@@ -130,8 +130,8 @@ class BotFather:
         #if userObj["assassino"] = 1 and userObj["motivo"] = 1 and userObj["arma"]=1 :
         #    self.end_game(user)
 
-    def end_game(self, user):
-        self.slackClient("")
+    #def end_game(self, user):
+    #    self.slackClient("")
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
