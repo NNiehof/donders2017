@@ -105,7 +105,6 @@ def handle_command(command, channel):
             players, playernames = get_active_users(channel)
             print(players) # need 5...
             assign_active_users(players, channel)
-            create_channels(playernames)
 
             for i in intro:
                 slack_client.api_call("chat.postMessage", channel=channel, text=i, as_user=True)
