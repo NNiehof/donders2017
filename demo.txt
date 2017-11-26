@@ -7,6 +7,8 @@ Non sono sposato						- No I am not married
 Hai qualche pistola?					- Do you have any guns?
 Sì, ho diverse pistole					- Yes, I have several guns
 
+Dove eri durante l'omicidio				- Where were you during the murder
+
 Wrong:
 
 Mi piace la formaggio					- I like cheese

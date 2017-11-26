@@ -1,13 +1,6 @@
 <aiml version="1.0.1" encoding="UTF-8">
 	<category>
-		<pattern>_MURDER*</pattern>
-		<template>
-			MURDERR!
-		</template>
-	</category>
-
-	<category>
-		<pattern>OMICIDIO</pattern>
+		<pattern>_OMICIDIO*</pattern>
 		<template>
 			MURDERR!
 		</template>
