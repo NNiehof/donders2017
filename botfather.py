@@ -22,7 +22,6 @@ class BotFather:
         self.wordFilter = WordFilter()
         self.learned_words = {key: [] for key in self.usernames}
 
-
         # Init language check
         self.language = language_check.LanguageTool("it-IT")
         self.n_learned = 0
@@ -89,8 +88,6 @@ class BotFather:
             return "TORTA DI MELE!"
         return None
 
-
-
     def direct_message(self, text, from_user, to_user, from_user_id):
         filtered = self.wordFilter.filter_text(text)
         home_channel = from_user + "-" + to_user
@@ -127,9 +124,8 @@ class BotFather:
                 print(self.usernames[user])
                 self.score(user,self.achievements[key],channel)
 
-    def score(self,user,clue, channel):
+    def score(self, user, clue, channel):
         self.post("Complimenti! hai trovato il " + clue + "!", channel)
-
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
