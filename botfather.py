@@ -64,7 +64,7 @@ class BotFather:
         if the words are unique and correct
         """
         if self.wordFilter.filter_text(text) is None:
-            for word in text:
+            for word in text.split():
                 if word not in self.learned_words[user]:
                     self.learned_words[user].append(word)
         n_learned = len(self.learned_words[user])
