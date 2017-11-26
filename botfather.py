@@ -27,7 +27,9 @@ class BotFather:
         self.kernel.learn('botfather.xml')
 
     def post(self, text, channel):
-        return self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
+        result = self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
+        print(result)
+        return result
 
     def get_channel_name(self, channel_id):
         info = self.slackClient.api_call("groups.info", channel=channel_id)
@@ -56,8 +58,9 @@ class BotFather:
                     # Find myname-othername channels
                     channel = self.get_channel_name(output['channel'])
                     match = re.search(r"([A-Za-z0-9]+)-([A-Za-z0-9]+)", channel)
+                    print(match)
                     if match:
-                        self.direct_message(output['text'], match.group(1), match.group(2))
+                        self.direct_message(output['text'], match.group(1), match.group(2), output['user'])
 
     def learning_progress(self, user, text):
         """Add user text input to that user's list of learned words,
@@ -78,23 +81,26 @@ class BotFather:
             for match in matches:
                 if len(match.replacements) > 0:
                     return "Did you mean '" + correction + "'?"
-            return "Unclear what you mean by that."
+            return "TARTA DI MELE!"
         return None
 
-    def direct_message(self, text, from_user, to_user):
+    def direct_message(self, text, from_user, to_user, from_user_id):
         filtered = self.wordFilter.filter_text(text)
+        home_channel = from_user + '-' + to_user
+        away_channel = to_user + '-' + from_user
         if filtered is None:
             # if all words are allowed, pass the message along to other user
-            channel = to_user + '-' + from_user
-            self.post(from_user + ": " + text, channel)
-            channel2 = from_user + '-' + to_user
+            if from_user_id in self.usernames:
+                from_user_name = self.usernames[from_user_id]
+            else:
+                from_user_name = from_user
+            self.post(from_user_name + ": " + text, away_channel)
             self.post("You have learned {} words so far!".format(
-                self.n_learned), channel2)
+                self.n_learned), home_channel)
         else:
             # if disallowed words present, notify the sender
-            channel = from_user + '-' + to_user
             text = "Cannot use the word '" + filtered + "'."
-            self.post(text, channel)
+            self.post(text, home_channel)
 
     def connect(self):
         if self.slackClient.rtm_connect():
@@ -105,16 +111,13 @@ class BotFather:
 
     def perform(self):
         input = self.slackClient.rtm_read()
-        #print(input)
         self.parse_slack_output(input)
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
-        #print(json_data)
         json_obj = json.loads(json_data)
         usernames = {'':''}
         for _item in json_obj['members']:
             if not _item['is_bot'] and  _item['id']!='USLACKBOT':
-                print(_item['id'],_item['name'])
                 usernames[_item['id']]=_item['name']
         return usernames
