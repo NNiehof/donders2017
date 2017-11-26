@@ -85,7 +85,7 @@ class BotFather:
             correction = language_check.correct(txt, matches)
             for match in matches:
                 if len(match.replacements) > 0:
-                    return "Did you mean "" + correction + ""?"
+                    return "Did you mean '" + correction + "'?"
             return "TARTA DI MELE!"
         return None
 
@@ -106,7 +106,7 @@ class BotFather:
                 self.n_learned), home_channel)
         else:
             # if disallowed words present, notify the sender
-            text = "Cannot use the word "" + filtered + ""."
+            text = "Cannot use the word '" + filtered + "'."
             self.post(text, home_channel)
 
     def connect(self):
