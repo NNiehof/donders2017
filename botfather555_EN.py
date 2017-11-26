@@ -75,7 +75,7 @@ def get_active_users(channel):
     active_uids = []
     active_unames = []
     for u in users["members"]: 
-        print u["id"]
+        print(u["id"])
         if not u["is_bot"]:
             uids.append(u["id"])
             unames.append(u["real_name"])
@@ -95,19 +95,6 @@ def assign_active_users(players, channel):
             slack_client.api_call("chat.postEphemeral", channel=channel, text=msg, user=uid, as_user=True)
             time.sleep(2)
 
-def create_channels(active_unames):
-    """Create for each set of users (u1, u2) a channel u1-u2 to pass filtered
-    messages from u1 to u2, and a channel u2-u1, to pass filtered messages
-    vice versa.
-    """
-    # all combinations of users
-    user_pairs = combinations(active_unames, 2)
-    for upair in user_pairs:
-        name1 = "{}-{}".format(upair[0], upair[1])
-        name2 = "{}-{}".format(upair[1], upair[0])
-        slack_client.api_call("groups.create", name=name1)
-        slack_client.api_call("groups.create", name=name2)
-
 def handle_command(command, channel):
     """Receives commands directed at the bot and determines if they are
     valid commands. If so, then acts on the commands. If not, asks for clarification.
@@ -116,8 +103,9 @@ def handle_command(command, channel):
     if not GAME_STARTED:
         if command.startswith(START_GAME):
             players, playernames = get_active_users(channel)
-            print players # need 5...
+            print(players) # need 5...
             assign_active_users(players, channel)
+            create_channels(playernames)
 
             for i in intro:
                 slack_client.api_call("chat.postMessage", channel=channel, text=i, as_user=True)
