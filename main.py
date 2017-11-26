@@ -1,4 +1,5 @@
 from botfather import BotFather
+from botfather_commander import BotfatherCommander
 import time
 
 # Hackathon-style tokens and IDs!
@@ -9,11 +10,12 @@ READ_WEBSOCKET_DELAY = 1  # 1 second delay between reading from firehose
 
 # ..and so began the reign of the Botfather.
 botFather = BotFather(SLACK_BOT_TOKEN, BOT_ID)
+botFatherCmd = BotfatherCommander(SLACK_BOT_TOKEN, BOT_ID)
 
-if botFather.connect():
-	print("Botfather connected and running!")
-	while True:
-		botFather.perform()
-		time.sleep(READ_WEBSOCKET_DELAY)
+if botFather.connect() and botFatherCmd.connect():
+    while True:
+        botFather.perform()
+        botFatherCmd.perform()
+        time.sleep(READ_WEBSOCKET_DELAY)
 else:
-	print("Connection failed. Invalid Slack token or bot ID?")
+    print("Connection failed. Invalid Slack token or bot ID?")
