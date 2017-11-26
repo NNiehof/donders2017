@@ -32,7 +32,6 @@ class BotFather:
 
     def post(self, text, channel):
         result = self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
-        print(result)
         return result
 
     def get_channel_name(self, channel_id):
