@@ -12,8 +12,8 @@ class BotFather:
         self.slackClient = SlackClient(slack_bot_token)
 
         self.achievements = {}        
-        self.achievements["^(?=.*\\bassassino\\b)(?=.*\\bgladiatore\\b).*$"] = "assassino"
-        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\bvendetta\\b).*$"] = "motivo"
+        self.achievements["^(?=.*\\bassassino\\b)(?=.*\\bmaestro\\b).*$"] = "assassino"
+        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\baffare\\b).*$"] = "motivo"
         self.achievements["^(?=.*\\barma\\b)(?=.*\\bcoltello\\b).*$"] = "arma"
         
         self.usernames = self.load_users()
