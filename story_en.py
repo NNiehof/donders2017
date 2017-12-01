@@ -15,14 +15,23 @@ tips = ["Very few of us are what we seem. -Agatha Christie",
         "I'm going to make him an offer he can't refuse.",
         "Revenge is a dish best served cold."]
 
-roles = ["reporter","tutor","gunnut","escort","gladiator"]  # shuffle
+roles = ["reporter", "tutor", "gunnut", "escort", "gladiator"]  # shuffle
 
 private_msg = {
     "reporter": ["You are the reporter, a bad boy with a reputation for using dirty tricks to get the latest news.",
                  "Your methods are not always legal..but that only matters if you get caught, right?",
                  "You have never been to the casino before.",
                  "Clue: You have been following Elvis for a story and you know that he was in a relationship with someone who was married."],
-    "tutor": ["tutors gotta tute"],
+    "tutor": ["You are the murderer. Other people will have clues that may identify you. You must tell others:",
+              "- You are a singing coach who has been coaching Elvis with his voice.",
+              "- You often give him private lessons at the casino to watch him.",
+              "- You are married to your wife (who is not at the casino tonight).",
+              "The following facts are secret, but if people ask you CANNOT lie about them:",
+              "- You were in a sexual relationship with Elvis.",
+              "- You promised Elvis you would leave your wife for him, but never intended to.",
+              "- Elvis learns you will never leave your wife and he threatens to expose your love affair.",
+              "- You take the Gun Nut's gun (he forgot it at the casino bar one night) and shoot Elvis when the curtain rises.",
+              "- You sneak away into the crowd and join the confusion."],
     "gunnut": ["You own several guns, as a true American.",
                "You and your wife are big Elvis fans.",
                "But you saw this this Elvis impersonator before, and think he is terrible.",

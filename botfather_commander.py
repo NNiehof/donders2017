@@ -47,7 +47,6 @@ class BotfatherCommander:
         """Receives commands directed at the bot and determines if they are
         valid commands. If so, then acts on the commands. If not, asks for clarification.
         """
-        print(self.GAME_STARTED)
         if not self.GAME_STARTED:
             if command.startswith(START_GAME):
                 players = self.get_active_users(channel)
@@ -57,7 +56,7 @@ class BotfatherCommander:
                     self.slack_client.api_call("chat.postMessage", channel=channel, text=i, as_user=True)
                     time.sleep(2)
                 self.GAME_STARTED = True
-                print("GAME STARTED" + str(self.GAME_STARTED))
+                print("GAME STARTED")
             else:
                 response = "Sorry? Try starting a game ('start game')."
                 self.slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)

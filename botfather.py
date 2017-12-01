@@ -3,7 +3,6 @@ import re
 from wordFilter import WordFilter
 import language_check
 import json
-import aiml
 
 class BotFather:
     def __init__(self, slack_bot_token, bot_id):
@@ -12,8 +11,8 @@ class BotFather:
         self.slackClient = SlackClient(slack_bot_token)
 
         self.achievements = {}        
-        self.achievements["^(?=.*\\bassassino\\b)(?=.*\\bgladiatore\\b).*$"] = "assassino"
-        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\bvendetta\\b).*$"] = "motivo"
+        self.achievements["^(?=.*\\bassassino\\b)(?=.*\\bmaestro\\b).*$"] = "assassino"
+        self.achievements["^(?=.*\\bmotivo\\b)(?=.*\\baffare\\b).*$"] = "motivo"
         self.achievements["^(?=.*\\barma\\b)(?=.*\\bcoltello\\b).*$"] = "arma"
         
         self.usernames = self.load_users()
@@ -25,10 +24,6 @@ class BotFather:
         # Init language check
         self.language = language_check.LanguageTool("it-IT")
         self.n_learned = 0
-
-        # Init AIML
-        self.kernel = aiml.Kernel()
-        self.kernel.learn("botfather.xml")
 
     def post(self, text, channel):
         result = self.slackClient.api_call("chat.postMessage", channel=channel, text=text, as_user=True)
@@ -47,10 +42,6 @@ class BotFather:
             for output in output_list:
                 # act upon messages that are not its own
                 if output and "text" in output and "user" in output and output["user"] != self.botID and self.atBot not in output['text']:
-                    # AIML
-                    response = self.kernel.respond(output["text"])
-                    if response:
-                        self.post(response, output["channel"])
                     user, self.n_learned = self.learning_progress(output["user"], output["text"],output["channel"])
                     # Language check
                     correction = self.check_language(output["text"])
@@ -116,21 +107,30 @@ class BotFather:
         self.parse_slack_output(input)
 
     def check_italian(self, user, text,channel):
-        for key in self.achievements:            
+        for key in self.achievements:   
             if re.match(key,text): 
-                self.usernames[user][self.achievements[key]] = 1
-                print(self.usernames[user])
+                self.usernames[user][self.achievements[key]] = 1                
                 self.score(user,self.achievements[key],channel)
-    def score(self, user, clue, channel):
+
+    def score(self, user, clue, channel):        
         self.post("Complimenti! hai trovato il " + clue + "!", channel)
         userObj = self.usernames[user]
-        if userObj["assassino"] == 1 and userObj["motivo"] == 1 and userObj["arma"]==1 :
+        clue1 = userObj["assassino"] == 1 
+        clue2 = userObj["motivo"] == 1 
+        clue3 = userObj["arma"] == 1
+        
+        if clue1 & clue2 & clue3:
+            print("END GAME")
             self.end_game(userObj)
 
     def end_game(self, userObj):        
-        channels = self.slackClient.api_call("groups.list")
-        for channel in channels:
-            self.post(userObj["name"]+" vinto la partita. Il gladiatore era l'assassino !. Ha pugnalato la sua vittima con un coltello per vendetta.", channel)
+        channels = self.slackClient.api_call("groups.list")        
+        msg = userObj["name"]+" vinto la partita. Il gladiatore era l'assassino !. Ha pugnalato la sua vittima con un coltello per vendetta."
+        self.post(msg, "general")
+
+        #for channel in channels["groups"]:
+        #    print(channel["id"])
+            
 
     def load_users(self):
         json_data = json.dumps(self.slackClient.api_call("users.list"))
